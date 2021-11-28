@@ -7,6 +7,10 @@ import common.Constants;
 import fileio.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import queries.ActorAwardsQuery;
+import queries.ActorDescriptionQuery;
+import queries.Query;
+import queries.UserRatingQuery;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +102,34 @@ public final class Main {
                 }
                 if (action.getType().equals("rating")) {
                     message = command.Rating();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+            }
+            if (action.getActionType().equals("query")) {
+                if (action.getObjectType().equals("actors")) {
+                    if (action.getCriteria().equals("average")) {
+                        Query actor_query = new Query(data, action);
+                        message = actor_query.AverageActor();
+                        JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                        arrayResult.add(object);
+                    }
+                    if (action.getCriteria().equals("awards")) {
+                        ActorAwardsQuery awards_actors = new ActorAwardsQuery(data, action);
+                        message = awards_actors.Awards();
+                        JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                        arrayResult.add(object);
+                    }
+                    if (action.getCriteria().equals("filter_description")) {
+                        ActorDescriptionQuery description_actors = new ActorDescriptionQuery(data, action);
+                        message = description_actors.Description();
+                        JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                        arrayResult.add(object);
+                    }
+                }
+                if (action.getObjectType().equals("users") && action.getCriteria().equals("num_ratings")) {
+                    UserRatingQuery users = new UserRatingQuery(data, action);
+                    message = users.Rating_Users();
                     JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
                     arrayResult.add(object);
                 }
