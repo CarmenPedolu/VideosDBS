@@ -7,10 +7,7 @@ import common.Constants;
 import fileio.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import queries.ActorAwardsQuery;
-import queries.ActorDescriptionQuery;
-import queries.Query;
-import queries.UserRatingQuery;
+import queries.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,6 +127,46 @@ public final class Main {
                 if (action.getObjectType().equals("users") && action.getCriteria().equals("num_ratings")) {
                     UserRatingQuery users = new UserRatingQuery(data, action);
                     message = users.Rating_Users();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getCriteria().equals("ratings")) {
+                    VideoQuery videoRatings = new VideoQuery(data, action);
+                    if (action.getObjectType().equals("movies")) {
+                        message = videoRatings.RatingMovies();
+                    } else {
+                        message = videoRatings.RatingSerials();
+                    }
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getCriteria().equals("favorite")) {
+                    VideoQuery video = new VideoQuery(data, action);
+                    if (action.getObjectType().equals("movies")) {
+                        message = video.FavoriteMovies();
+                    } else {
+                        message = video.FavoriteSerials();
+                    }
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getCriteria().equals("longest")) {
+                    VideoQuery video = new VideoQuery(data, action);
+                    if (action.getObjectType().equals("movies")) {
+                        message = video.LongestMovies();
+                    } else {
+                        message = video.LongestSerials();
+                    }
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getCriteria().equals("most_viewed")) {
+                    VideoQuery video = new VideoQuery(data, action);
+                    if (action.getObjectType().equals("movies")) {
+                        message = video.MostViewedMovies();
+                    } else {
+                        message = video.MostViewedSerials();
+                    }
                     JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
                     arrayResult.add(object);
                 }
