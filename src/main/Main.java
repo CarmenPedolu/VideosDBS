@@ -171,6 +171,38 @@ public final class Main {
                     arrayResult.add(object);
                 }
             }
+            if (action.getActionType().equals("recommendation")) {
+                if (action.getType().equals("standard")) {
+                    Recommendation recommand = new Recommendation(data, action.getUsername());
+                    message = recommand.Standard();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getType().equals("best_unseen")) {
+                    Recommendation recommand = new Recommendation(data, action.getUsername());
+                    message = recommand.BestUnseen();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getType().equals("favorite")) {
+                    Recommendation recommand = new Recommendation(data, action.getUsername());
+                    message = recommand.Favorite();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getType().equals("search")) {
+                    SearchRecommendation recommand = new SearchRecommendation(data, action.getUsername(),action.getGenre());
+                    message = recommand.Search();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+                if (action.getType().equals("popular")) {
+                    Recommendation recommand = new Recommendation(data, action.getUsername());
+                    message = recommand.Popular();
+                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+                    arrayResult.add(object);
+                }
+            }
         }
         fileWriter.closeJSON(arrayResult);
     }
