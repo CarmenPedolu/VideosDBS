@@ -1,20 +1,32 @@
 package main;
 
-import Entities.*;
+import entities.Action;
+
 import checker.Checkstyle;
 import checker.Checker;
 import common.Constants;
-import fileio.*;
+
+import fileio.Input;
+import fileio.InputLoader;
+import fileio.Writer;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import queries.*;
+
+import execution.AwardsQuery;
+import execution.Command;
+import execution.DescriptQuery;
+import execution.Query;
+import execution.Recommendation;
+import execution.SearchRecommendation;
+import execution.UserRatingQuery;
+import execution.VideoQuery;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -73,136 +85,99 @@ public final class Main {
         Writer fileWriter = new Writer(filePath2);
         JSONArray arrayResult = new JSONArray();
 
-        //TODO add here the entry point to your implementation
-        //System.out.println(input.getCommands().get(0));
-        List<ActionInputData> list = input.getCommands();
-//        for (ActionInputData actionnn : list) {
-//            if (actionnn.getActionType().equals("query"))
-//            System.out.println(actionnn.getFilters().get(2));
-//        }
         Database data = new Database(input);
-        String message;
+        String message = null;
         for (Action action : data.getActions()) {
             if (action.getActionType().equals("command")) {
                 Command command = new Command(data, action.getType(),
                         action.getUsername(), action.getTitle(),
                         action.getGrade(), action.getSeasonNumber());
                 if (action.getType().equals("favorite")) {
-                    message = command.Favorite();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
+                    message = command.favorite();
                 }
                 if (action.getType().equals("view")) {
-                    message = command.View();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
+                    message = command.view();
                 }
                 if (action.getType().equals("rating")) {
-                    message = command.Rating();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
+                    message = command.rating();
                 }
             }
             if (action.getActionType().equals("query")) {
                 if (action.getObjectType().equals("actors")) {
                     if (action.getCriteria().equals("average")) {
-                        Query actor_query = new Query(data, action);
-                        message = actor_query.AverageActor();
-                        JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                        arrayResult.add(object);
+                        Query actorQuery = new Query(data, action);
+                        message = actorQuery.averageActor();
                     }
                     if (action.getCriteria().equals("awards")) {
-                        ActorAwardsQuery awards_actors = new ActorAwardsQuery(data, action);
-                        message = awards_actors.Awards();
-                        JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                        arrayResult.add(object);
+                        AwardsQuery awardsActors = new AwardsQuery(data, action);
+                        message = awardsActors.awards();
                     }
                     if (action.getCriteria().equals("filter_description")) {
-                        ActorDescriptionQuery description_actors = new ActorDescriptionQuery(data, action);
-                        message = description_actors.Description();
-                        JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                        arrayResult.add(object);
+                        DescriptQuery descriptionActors = new DescriptQuery(data, action);
+                        message = descriptionActors.description();
                     }
                 }
-                if (action.getObjectType().equals("users") && action.getCriteria().equals("num_ratings")) {
+                if (action.getObjectType().equals("users")
+                        && action.getCriteria().equals("num_ratings")) {
                     UserRatingQuery users = new UserRatingQuery(data, action);
-                    message = users.Rating_Users();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
+                    message = users.ratingUsers();
                 }
                 if (action.getCriteria().equals("ratings")) {
                     VideoQuery videoRatings = new VideoQuery(data, action);
                     if (action.getObjectType().equals("movies")) {
-                        message = videoRatings.RatingMovies();
+                        message = videoRatings.ratingMovies();
                     } else {
-                        message = videoRatings.RatingSerials();
+                        message = videoRatings.ratingSerials();
                     }
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
                 }
                 if (action.getCriteria().equals("favorite")) {
                     VideoQuery video = new VideoQuery(data, action);
                     if (action.getObjectType().equals("movies")) {
-                        message = video.FavoriteMovies();
+                        message = video.favoriteMovies();
                     } else {
-                        message = video.FavoriteSerials();
+                        message = video.favoriteSerials();
                     }
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
                 }
                 if (action.getCriteria().equals("longest")) {
                     VideoQuery video = new VideoQuery(data, action);
                     if (action.getObjectType().equals("movies")) {
-                        message = video.LongestMovies();
+                        message = video.longestMovies();
                     } else {
-                        message = video.LongestSerials();
+                        message = video.longestSerials();
                     }
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
                 }
                 if (action.getCriteria().equals("most_viewed")) {
                     VideoQuery video = new VideoQuery(data, action);
                     if (action.getObjectType().equals("movies")) {
-                        message = video.MostViewedMovies();
+                        message = video.mostViewedMovies();
                     } else {
-                        message = video.MostViewedSerials();
+                        message = video.mostViewedSerials();
                     }
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
                 }
             }
             if (action.getActionType().equals("recommendation")) {
-                if (action.getType().equals("standard")) {
-                    Recommendation recommand = new Recommendation(data, action.getUsername());
-                    message = recommand.Standard();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
-                }
-                if (action.getType().equals("best_unseen")) {
-                    Recommendation recommand = new Recommendation(data, action.getUsername());
-                    message = recommand.BestUnseen();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
-                }
-                if (action.getType().equals("favorite")) {
-                    Recommendation recommand = new Recommendation(data, action.getUsername());
-                    message = recommand.Favorite();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
-                }
                 if (action.getType().equals("search")) {
-                    SearchRecommendation recommand = new SearchRecommendation(data, action.getUsername(),action.getGenre());
-                    message = recommand.Search();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
-                }
-                if (action.getType().equals("popular")) {
+                    SearchRecommendation recommand = new SearchRecommendation(data,
+                            action.getUsername(), action.getGenre());
+                    message = recommand.search();
+                } else {
                     Recommendation recommand = new Recommendation(data, action.getUsername());
-                    message = recommand.Popular();
-                    JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
-                    arrayResult.add(object);
+                    if (action.getType().equals("standard")) {
+                        message = recommand.standard();
+                    }
+                    if (action.getType().equals("best_unseen")) {
+                        message = recommand.bestUnseen();
+                    }
+                    if (action.getType().equals("favorite")) {
+                        message = recommand.favorite();
+                    }
+                    if (action.getType().equals("popular")) {
+                        message = recommand.popular();
+                    }
                 }
             }
+            JSONObject object = fileWriter.writeFile(action.getActionId(), null, message);
+            arrayResult.add(object);
         }
         fileWriter.closeJSON(arrayResult);
     }

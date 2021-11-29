@@ -1,4 +1,4 @@
-package Entities;
+package entities;
 
 import actor.ActorsAwards;
 import fileio.ActorInputData;
@@ -6,29 +6,19 @@ import fileio.ActorInputData;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Actor {
+public final class Actor {
     private String name;
-    private String careerDescription;
+    private final String careerDescription;
     private ArrayList<String> filmography;
     private Map<ActorsAwards, Integer> awards;
-    private double avg_rating;
+    private double avgRating;
 
-    public Actor(final String name, final String careerDescription,
-                          final ArrayList<String> filmography,
-                          final Map<ActorsAwards, Integer> awards) {
-        this.name = name;
-        this.careerDescription = careerDescription;
-        this.filmography = filmography;
-        this.awards = awards;
-        this.avg_rating = 0;
-    }
-
-    public Actor(ActorInputData actor) {
+    public Actor(final ActorInputData actor) {
         this.name = actor.getName();
         this.awards = actor.getAwards();
         this.careerDescription = actor.getCareerDescription();
         this.filmography = actor.getFilmography();
-        this.avg_rating = 0;
+        this.avgRating = 0;
     }
 
     public String getName() {
@@ -51,7 +41,7 @@ public class Actor {
         return awards;
     }
 
-    public void setAwards(Map<ActorsAwards, Integer> awards) {
+    public void setAwards(final Map<ActorsAwards, Integer> awards) {
         this.awards = awards;
     }
 
@@ -59,16 +49,12 @@ public class Actor {
         return careerDescription;
     }
 
-    public void setCareerDescription(final String careerDescription) {
-        this.careerDescription = careerDescription;
+    public double getAvgRating() {
+        return avgRating;
     }
 
-    public double getAvg_rating() {
-        return avg_rating;
-    }
-
-    public void setAvg_rating(double avg_rating) {
-        this.avg_rating = avg_rating;
+    public void setAvgRating(final double avgRating) {
+        this.avgRating = avgRating;
     }
 
     @Override

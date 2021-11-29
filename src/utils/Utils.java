@@ -3,10 +3,17 @@ package utils;
 import actor.ActorsAwards;
 import common.Constants;
 import entertainment.Genre;
+import entities.Movie;
+import entities.Serial;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 /**
  * The class contains static methods that helps with parsing.
@@ -19,6 +26,8 @@ public final class Utils {
      */
     private Utils() {
     }
+
+    public static final int AWARDSINDEX = 3;
 
     /**
      * Transforms a string into an enum
@@ -127,26 +136,144 @@ public final class Utils {
         return mapVideos;
     }
 
-    public static String sortedQuery(Map<String, Integer> movieFiltersDuration, String sortType, int nr) {
+    /**
+     * Transforms a map which has the value a Integer to a list sorted by Value and Key
+     *
+     * @param map map with String as key and Integer as Value
+     * @param sortType String for how to sort
+     * @param nr Integer for how many elements the list should have
+     * @return a message with the list
+     */
+    public static String sortedIntegerAlphabetical(final Map<String, Integer> map,
+                                                   final String sortType, final int nr) {
         //Sortez map ul dupa rating, iar daca e egal, dupa nume
-        List<String> sortedMovieDuration = new ArrayList(movieFiltersDuration.entrySet().stream().sorted(new Comparator<Map.Entry<String, Integer>>() {
-            @Override
-            public int compare(Map.Entry<String, Integer> video1, Map.Entry<String, Integer> video2) {
-                if (video1.getValue() > video2.getValue()) {
-                    return 1;
-                } else if (video1.getValue() < video2.getValue()) {
-                    return -1;
-                } else {
-                    return (video1.getKey().compareTo(video2.getKey()));
-                }
-            }
-        }).map(Map.Entry::getKey).toList());
+        List<String> sortedMap = new ArrayList(map.entrySet().stream().
+                sorted(new Comparator<Map.Entry<String, Integer>>() {
+                    @Override
+                    public int compare(final Map.Entry<String, Integer> elem1,
+                                       final Map.Entry<String, Integer> elem2) {
+                        if (elem1.getValue() > elem2.getValue()) {
+                            return 1;
+                        } else if (elem1.getValue() < elem2.getValue()) {
+                            return -1;
+                        } else {
+                            return (elem1.getKey().compareTo(elem2.getKey()));
+                        }
+                    }
+                }).map(Map.Entry::getKey).toList());
         if (sortType.equals("desc")) {
-            Collections.reverse(sortedMovieDuration);
+            Collections.reverse(sortedMap);
         }
-        while (sortedMovieDuration.size() > nr) {
-            sortedMovieDuration.remove(sortedMovieDuration.size() - 1);
+        while (sortedMap.size() > nr) {
+            sortedMap.remove(sortedMap.size() - 1);
         }
-        return ("Query result: " + sortedMovieDuration);
+        return ("Query result: " + sortedMap);
+    }
+
+    /**
+     * Transforms a map which has the value a Double to a list sorted by Value and Key
+     *
+     * @param map map with String as key and Double as Value
+     * @param sortType String for how to sort
+     * @param nr Integer for how many elements the list should have
+     * @return a message with the list
+     */
+    public static String sortedDoubleAlphabetical(final Map<String, Double> map,
+                                                  final String sortType, final int nr) {
+        //Sortez map ul dupa rating, iar daca e egal, dupa nume
+        List<String> sortedMap = new ArrayList(map.entrySet().stream().
+                sorted(new Comparator<Map.Entry<String, Double>>() {
+                    @Override
+                    public int compare(final Map.Entry<String, Double> elem1,
+                                       final Map.Entry<String, Double> elem2) {
+                        if (elem1.getValue() > elem2.getValue()) {
+                            return 1;
+                        } else if (elem1.getValue() < elem2.getValue()) {
+                            return -1;
+                        } else {
+                            return (elem1.getKey().compareTo(elem2.getKey()));
+                        }
+                    }
+                }).map(Map.Entry::getKey).toList());
+        if (sortType.equals("desc")) {
+            Collections.reverse(sortedMap);
+        }
+        while (sortedMap.size() > nr) {
+            sortedMap.remove(sortedMap.size() - 1);
+        }
+        return ("Query result: " + sortedMap);
+    }
+
+    /**
+     * Transforms a map which has the Integer as value to a list sorted by Value
+     *
+     * @param map map with String as key and Integer as Value
+     * @return a list of String
+     */
+    public static List<String> sortedMapDescendentInteger(final LinkedHashMap<String,
+            Integer> map) {
+        List<String> mapSorted = new ArrayList(map.entrySet().stream().
+                sorted(new Comparator<Map.Entry<String, Integer>>() {
+                    @Override
+                    public int compare(final Map.Entry<String, Integer> elem1,
+                                       final Map.Entry<String, Integer> elem2) {
+                        if (elem1.getValue() > elem2.getValue()) {
+                            return -1;
+                        } else if (elem1.getValue() < elem2.getValue()) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                }).map(Map.Entry::getKey).toList());
+        return mapSorted;
+    }
+
+    /**
+     * Transforms a map which has the Double as value to a list sorted by Value
+     *
+     * @param map map with String as key and Double as Value
+     * @return a list of String
+     */
+    public static List<String> sortedMapDescendentDouble(final LinkedHashMap<String, Double> map) {
+        List<String> mapSorted = new ArrayList(map.entrySet().stream().
+                sorted(new Comparator<Map.Entry<String, Double>>() {
+                    @Override
+                    public int compare(final Map.Entry<String, Double> elem1,
+                                       final Map.Entry<String, Double> elem2) {
+                        if (elem1.getValue() > elem2.getValue()) {
+                            return -1;
+                        } else if (elem1.getValue() < elem2.getValue()) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                }).map(Map.Entry::getKey).toList());
+        return mapSorted;
+    }
+
+    /**
+     * @param movie a Movie
+     * @param year Integer in which the movie should be launch
+     * @param genre String which contains should contains one of the genres of the movie
+     * @return true if the movie respects the condition, or false if not
+     */
+    public static boolean filterMovie(final Movie movie, final int year, final String genre) {
+        if (year != 0 && movie.getYear() != year) {
+            return false;
+        }
+        return genre == null || movie.getGenres().contains(genre);
+    }
+
+    /**
+     * @param serial a Serial
+     * @param year Integer in which the movie should be launch
+     * @param genre String which contains should contains one of the genres of the serial
+     * @return true if the serial respects the condition, or false if not
+     */
+    public static boolean filterSerial(final Serial serial, final int year, final String genre) {
+        if (year != 0 && serial.getYear() != year) {
+            return false;
+        }
+        return genre == null || serial.getGenres().contains(genre);
     }
 }

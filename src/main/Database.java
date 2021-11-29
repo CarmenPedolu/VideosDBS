@@ -1,29 +1,24 @@
 package main;
 
-import Entities.Actor;
-import Entities.Movie;
-import Entities.Serial;
-import Entities.User;
-import Entities.Action;
-import checker.Checkstyle;
-import checker.Checker;
-import common.Constants;
-import fileio.*;
-import org.json.simple.JSONArray;
+import entities.Action;
+import entities.Actor;
+import entities.Movie;
+import entities.Serial;
+import entities.User;
 
-import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import fileio.Input;
+import fileio.ActionInputData;
+import fileio.ActorInputData;
+import fileio.MovieInputData;
+import fileio.SerialInputData;
+import fileio.UserInputData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-public class  Database {
 
+public final class Database {
     private List<Actor> actors;
     private List<User> users;
     private List<Movie> movies;
@@ -34,7 +29,7 @@ public class  Database {
         return actors;
     }
 
-    public void setActors(List<Actor> actors) {
+    public void setActors(final List<Actor> actors) {
         this.actors = actors;
     }
 
@@ -42,7 +37,7 @@ public class  Database {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(final List<User> users) {
         this.users = users;
     }
 
@@ -50,7 +45,7 @@ public class  Database {
         return movies;
     }
 
-    public void setMovies(List<Movie> movies) {
+    public void setMovies(final List<Movie> movies) {
         this.movies = movies;
     }
 
@@ -58,7 +53,7 @@ public class  Database {
         return serials;
     }
 
-    public void setSerials(List<Serial> serials) {
+    public void setSerials(final List<Serial> serials) {
         this.serials = serials;
     }
 
@@ -66,50 +61,40 @@ public class  Database {
         return actions;
     }
 
-    public void setActions(List<Action> actions) {
+    public void setActions(final List<Action> actions) {
         this.actions = actions;
     }
 
-//    public Database() {
-//        this.actions = null;
-//        this.movies = null;
-//        this.serials = null;
-//        this.users = null;
-//        this.actors = null;
-//    }
+    public Database(final Input input) {
+        List<ActorInputData> actorInput = input.getActors();
+        List<UserInputData> userInput = input.getUsers();
+        List<MovieInputData> movieInput = input.getMovies();
+        List<SerialInputData> serialInput = input.getSerials();
+        List<ActionInputData> actionInput = input.getCommands();
 
-    public Database (Input input) {
-        List<ActorInputData> actor_input = input.getActors();
-        List<UserInputData> user_input = input.getUsers();
-        List<MovieInputData> movie_input = input.getMovies();
-        List<SerialInputData> serial_input = input.getSerials();
-        List<ActionInputData> action_input = input.getCommands();
-
-        //fac cate o lista pentru fiecare si dupa ii dau set la lista aia
-        //deep copy sa iau element cu element
-        List<Actor> actors = new ArrayList<>();
-        for (ActorInputData actor : actor_input) {
-            actors.add(new Actor(actor));
+        List<Actor> actorsList = new ArrayList<>();
+        for (ActorInputData actor : actorInput) {
+            actorsList.add(new Actor(actor));
         }
 
-        List<Movie> movies = new ArrayList<>();
-        for (MovieInputData movie : movie_input) {
-            movies.add(new Movie(movie));
+        List<Movie> moviesList = new ArrayList<>();
+        for (MovieInputData movie : movieInput) {
+            moviesList.add(new Movie(movie));
         }
 
-        List<Serial> serials = new ArrayList<>();
-        for (SerialInputData serial : serial_input) {
-            serials.add(new Serial(serial));
+        List<Serial> serialsList = new ArrayList<>();
+        for (SerialInputData serial : serialInput) {
+            serialsList.add(new Serial(serial));
         }
 
-        List<User> users = new ArrayList<>();
-        for (UserInputData user : user_input) {
-            //users.add(new User(user));
-            User new_user = new User(user);
-            //setez de cate ori apare fiecare movie sau serial la favorite la un user
+        List<User> usersList = new ArrayList<>();
+        for (UserInputData user : userInput) {
+            User newUser = new User(user);
+            // Setez de cate ori apare fiecare movie sau serial la favorite la un user
+            // Setez numarul de vizualizari la fiecare movie sau serial
             ArrayList<String> favorites = user.getFavoriteMovies();
             Map<String, Integer> history = user.getHistory();
-            for (Movie movie : movies) {
+            for (Movie movie : moviesList) {
                 if (favorites.contains(movie.getTitle())) {
                     movie.setFavorite(movie.getFavorite() + 1);
                 }
@@ -117,7 +102,7 @@ public class  Database {
                     movie.setNrViews(movie.getNrViews() + history.get(movie.getTitle()));
                 }
             }
-            for (Serial serial : serials) {
+            for (Serial serial : serialsList) {
                 if (favorites.contains(serial.getTitle())) {
                     serial.setFavorite(serial.getFavorite() + 1);
                 }
@@ -125,51 +110,18 @@ public class  Database {
                     serial.setNrViews(serial.getNrViews() + history.get(serial.getTitle()));
                 }
             }
-            users.add(new_user);
+            usersList.add(newUser);
         }
 
-        List<Action> actions = new ArrayList<>();
-        for (ActionInputData action : action_input) {
-            actions.add(new Action(action));
-           /* if (action.getActionType().equals("command")) {
-                actions.add(new Action(action.getActionId(),
-                        action.getActionType(), action.getType(),
-                        action.getUsername(), action.getTitle(),
-                        action.getGrade(), action.getSeasonNumber()));
-            }
-            if (action.getActionType().equals("query")) {
-                System.out.println(action.getFilters().get(2));
-                System.out.println(action.getActionId() + " " +action.getFilters().get(3));
-                actions.add(new Action(action.getActionId(),
-                        action.getActionType(), action.getObjectType(),
-                        action.getFilters().get(1).get(0), action.getSortType(),
-                        action.getCriteria(),
-                        action.getFilters().get(0).get(0),
-                        action.getNumber(), action.getFilters().get(2),
-                        action.getFilters().get(3)));
-                System.out.println(action.toString());
-            }
-            if (action.getActionType().equals("recommendation")) {
-                actions.add(new Action(action.getActionId(),
-                        action.getActionType(),action.getType(),
-                        action.getUsername(),action.getGenre()));
-            }*/
+        List<Action> actionsList = new ArrayList<>();
+        for (ActionInputData action : actionInput) {
+            actionsList.add(new Action(action));
         }
 
-        this.actions = actions;
-        this.movies = movies;
-        this.serials = serials;
-        this.users = users;
-        this.actors = actors;
+        this.actions = actionsList;
+        this.movies = moviesList;
+        this.serials = serialsList;
+        this.users = usersList;
+        this.actors = actorsList;
     }
-
-    public Database(List<Actor> actors, List<User> users, List<Movie> movies,
-                    List<Serial> serials, List<Action> actions) {
-        this.actions = actions;
-        this.movies = movies;
-        this.serials = serials;
-        this.users = users;
-        this.actors = actors;
-    }
-
 }

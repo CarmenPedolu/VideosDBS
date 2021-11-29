@@ -1,18 +1,17 @@
-package queries;
+package execution;
 
-import Entities.Action;
-import Entities.Actor;
+import entities.Action;
+import entities.Actor;
 import main.Database;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
-public class ActorDescriptionQuery extends Query {
+public final class DescriptQuery extends Query {
     private List<String> words;
 
-    public ActorDescriptionQuery(Database database, Action action) {
+    public DescriptQuery(final Database database, final Action action) {
         super(database, action);
         this.words = action.getFilters().get(2);
     }
@@ -21,12 +20,17 @@ public class ActorDescriptionQuery extends Query {
         return words;
     }
 
-    public void setWords(List<String> words) {
+    public void setWords(final List<String> words) {
         this.words = words;
     }
 
-    public String Description() {
-        ArrayList<String> sorted_actors_description = new ArrayList<>();
+    /**
+     * Find the actors based on specific words in their description
+     *
+     * @return a String which contains the actors suitable
+     */
+    public String description() {
+        ArrayList<String> actorsDescription = new ArrayList<>();
         List<Actor> actors = getData().getActors();
         for (Actor actor : actors) {
             int add = 0;
@@ -45,14 +49,14 @@ public class ActorDescriptionQuery extends Query {
                 }
             }
             if (add == 1) {
-                sorted_actors_description.add(actor.getName());
+                actorsDescription.add(actor.getName());
             }
         }
         // Sortez arrayListul alfabetic
-        Collections.sort(sorted_actors_description);
+        Collections.sort(actorsDescription);
         if (getSortType().equals("desc")) {
-            Collections.reverse(sorted_actors_description);
+            Collections.reverse(actorsDescription);
         }
-        return ("Query result: " + sorted_actors_description);
+        return ("Query result: " + actorsDescription);
     }
 }

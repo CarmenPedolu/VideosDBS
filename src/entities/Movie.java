@@ -1,10 +1,10 @@
-package Entities;
+package entities;
 
 import fileio.MovieInputData;
 
 import java.util.ArrayList;
 
-public class Movie {
+public final class Movie {
     private int duration;
     private String title;
     private int year;
@@ -15,21 +15,7 @@ public class Movie {
     private int favorite;
     private int nrViews;
 
-    public Movie(String title, ArrayList<String> cast,
-                 ArrayList<String> genres, int year,
-                 int duration) {
-        this.title = title;
-        this.year = year;
-        this.cast = cast;
-        this.genres = genres;
-        this.duration = duration;
-        this.rating = null;
-        this.avgRating = 0;
-        this.favorite = 0;
-        this.nrViews = 0;
-    }
-
-    public Movie(MovieInputData movie) {
+    public Movie(final MovieInputData movie) {
         this.duration = movie.getDuration();
         this.title = movie.getTitle();
         this.year = movie.getYear();
@@ -45,7 +31,7 @@ public class Movie {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(final int duration) {
         this.duration = duration;
     }
 
@@ -53,7 +39,7 @@ public class Movie {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -61,7 +47,7 @@ public class Movie {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(final int year) {
         this.year = year;
     }
 
@@ -69,7 +55,7 @@ public class Movie {
         return cast;
     }
 
-    public void setCast(ArrayList<String> cast) {
+    public void setCast(final ArrayList<String> cast) {
         this.cast = cast;
     }
 
@@ -77,7 +63,7 @@ public class Movie {
         return genres;
     }
 
-    public void setGenres(ArrayList<String> genres) {
+    public void setGenres(final ArrayList<String> genres) {
         this.genres = genres;
     }
 
@@ -85,7 +71,7 @@ public class Movie {
         return rating;
     }
 
-    public void setRating(ArrayList<Double> rating) {
+    public void setRating(final ArrayList<Double> rating) {
         this.rating = rating;
     }
 
@@ -93,15 +79,15 @@ public class Movie {
         return avgRating;
     }
 
-    public void setAvgRating(double avg_rating) {
-        this.avgRating = avg_rating;
+    public void setAvgRating(final double avgRating) {
+        this.avgRating = avgRating;
     }
 
     public int getFavorite() {
         return favorite;
     }
 
-    public void setFavorite(int favorite) {
+    public void setFavorite(final int favorite) {
         this.favorite = favorite;
     }
 
@@ -109,7 +95,7 @@ public class Movie {
         return nrViews;
     }
 
-    public void setNrViews(int nrViews) {
+    public void setNrViews(final int nrViews) {
         this.nrViews = nrViews;
     }
 
@@ -123,4 +109,3 @@ public class Movie {
                 + "genres {" + this.getGenres() + " }\n ";
     }
 }
-
